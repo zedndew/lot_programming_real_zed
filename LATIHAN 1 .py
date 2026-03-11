@@ -9,75 +9,68 @@ import folium
 from streamlit_folium import folium_static 
 from pyproj import Transformer
 
-# ================== CONFIG HALAMAN ==================
-st.set_page_config(page_title="Sistem Survey Lot PUO", layout="wide", initial_sidebar_state="collapsed")
+# Set page configuration
+st.set_page_config(page_title="Sistem Survey Lot PUO", page_icon="🔐", layout="wide")
 
 # ================== CUSTOM CSS (AESTHETIC DARK BROWN) ==================
-st.markdown("""
-    <style>
-    /* Sembunyikan Header & Footer Streamlit */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-    
-    /* Elakkan Scrolling pada Login Page */
-    .stApp {
-        background-color: #1a1614;
-    }
+def local_css():
+    st.markdown("""
+        <style>
+        /* Background App */
+        .stApp {
+            background-color: #1b1714;
+        }
 
-    /* Container Login di Tengah */
-    .login-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 80vh;
-        max-width: 400px;
-        margin: auto;
-    }
+        /* Login Card Container */
+        .login-container {
+            background-color: #2c2420;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid #3d332d;
+            text-align: center;
+        }
 
-    /* Input Field Styling */
-    .stTextInput input {
-        background-color: #2d2621 !important;
-        color: #e0d8d0 !important;
-        border: 1px solid #4a3f35 !important;
-        border-radius: 10px !important;
-        padding: 12px !important;
-    }
+        /* Input Styling */
+        .stTextInput > div > div > input {
+            background-color: #3d332d !important;
+            color: #dcd0c0 !important;
+            border-radius: 10px !important;
+            border: 1px solid #5a4a42 !important;
+        }
 
-    /* Button Styling */
-    .stButton button {
-        background-color: #5c4a3c !important;
-        color: white !important;
-        border-radius: 10px !important;
-        border: none !important;
-        height: 45px !important;
-        font-weight: bold !important;
-        transition: 0.3s !important;
-    }
-    .stButton button:hover {
-        background-color: #826a56 !important;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.3) !important;
-    }
+        /* Button Styling */
+        .stButton > button {
+            background-color: #634e42 !important;
+            color: #f5f5f5 !important;
+            border-radius: 10px !important;
+            border: none !important;
+            height: 3em !important;
+            font-weight: bold !important;
+            transition: 0.3s !important;
+        }
+        .stButton > button:hover {
+            background-color: #8a6d5d !important;
+            border: 1px solid #dcd0c0 !important;
+        }
 
-    /* Label & Title */
-    label {
-        color: #c4b5a8 !important;
-        font-weight: 500 !important;
-    }
-    h2 {
-        color: #d9cbbd !important;
-        font-family: 'Inter', sans-serif;
-        letter-spacing: -1px;
-    }
-    
-    /* Dialog Box */
-    div[role="dialog"] {
-        background-color: #2d2621 !important;
-        color: white !important;
-    }
-    </style>
+        /* Reset Button Specific */
+        .reset-btn button {
+            background-color: transparent !important;
+            color: #a89081 !important;
+            text-decoration: underline !important;
+            border: none !important;
+        }
+
+        /* Title & Text */
+        h2, p, label {
+            color: #dcd0c0 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        </style>
     """, unsafe_allow_html=True)
+
+local_css()
 
 # ================== FUNGSI TUKAR DMS ==================
 def format_dms(decimal_degree):
@@ -103,42 +96,51 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        # Wrapper untuk centering tanpa scrolling
-        st.markdown('<div class="login-container">', unsafe_allow_html=True)
+        # Menghasilkan ruang kosong di atas
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
         
-        st.markdown("<h2 style='text-align: center; margin-bottom: 25px;'>🤎 Sistem Survey Lot PUO</h2>", unsafe_allow_html=True)
+        _, col_mid, _ = st.columns([1, 1.2, 1])
         
-        user_id = st.text_input("👤 Masukkan ID:", key="user_id")
-        password = st.text_input("🔑 Masukkan Kata Laluan:", type="password", key="user_pass")
-        
-        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
-        
-        if st.button("Log Masuk", use_container_width=True):
-            if user_id == "zed" and password == "admin123":
-                st.session_state["password_correct"] = True
-                st.rerun()
-            else:
-                st.error("😕 ID atau Kata Laluan salah.")
-        
-        if st.button("❓ Lupa Kata Laluan?", use_container_width=True):
-            reset_password_dialog()
+        with col_mid:
+            # Login Card
+            st.markdown("""
+                <div class="login-container">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6195/6195696.png" width="80">
+                    <h2 style='margin-bottom: 25px;'>Sistem Survey Lot PUO</h2>
+                </div>
+            """, unsafe_allow_html=True)
             
-        st.markdown('</div>', unsafe_allow_html=True)
+            # Form Inputs
+            user_id = st.text_input("👤 ID Pengguna", key="user_id", placeholder="Masukkan ID anda")
+            password = st.text_input("🔑 Kata Laluan", type="password", key="user_pass", placeholder="••••••••")
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            if st.button("Log Masuk Utamakan", use_container_width=True):
+                if user_id == "zed" and password == "admin123":
+                    st.session_state["password_correct"] = True
+                    st.rerun()
+                else:
+                    st.error("😕 ID atau Kata Laluan salah.")
+            
+            st.markdown('<div class="reset-btn">', unsafe_allow_html=True)
+            if st.button("❓ Lupa Kata Laluan?", use_container_width=True):
+                reset_password_dialog()
+            st.markdown('</div>', unsafe_allow_html=True)
+            
         return False
     return True
 
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
-    # Tunjukkan kembali sidebar selepas login
-    st.markdown("<style>.stSidebar {display: block !important;}</style>", unsafe_allow_html=True)
     
-    # --- 👤 PROFIL PENGGUNA (SIDEBAR) ---
+    # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
         """
-        <div style="background: linear-gradient(135deg, #5c4a3c, #2d2621); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #7d6855;">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="80" style="border-radius: 50%; border: 3px solid #d9cbbd;">
+        <div style="background: linear-gradient(135deg, #634e42, #3d332d); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #8a6d5d;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="80" style="border-radius: 50%; border: 3px solid #dcd0c0;">
             <h3 style="color: white; margin-top: 10px; font-family: sans-serif;">Hai, Zed!</h3>
-            <p style="color: #c4b5a8; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
+            <p style="color: #dcd0c0; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
         </div>
         """, unsafe_allow_html=True
     )
@@ -154,8 +156,8 @@ if check_password():
     with col_text:
         st.markdown("""
             <style>
-                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; color: #5c4a3c; }
-                .sub-title { font-size: 20px; color: #826a56; margin-top: 0px; }
+                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; color: #dcd0c0; }
+                .sub-title { font-size: 20px; color: #a89081; margin-top: 0px; }
             </style>
             <div>
                 <h1 class="main-title">SISTEM SURVEY LOT</h1>
@@ -163,7 +165,7 @@ if check_password():
             </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("<hr style='border: 1px solid #4a3f35; margin-top: 0px;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 1px solid #3d332d; margin-top: 0px;'>", unsafe_allow_html=True)
 
     # ================== SIDEBAR SETTINGS ==================
     st.sidebar.header("⚙️ Tetapan Paparan")
@@ -200,6 +202,7 @@ if check_password():
             df = pd.read_csv(uploaded_file)
             
             if all(col in df.columns for col in ['STN', 'E', 'N']):
+                
                 transformer = Transformer.from_crs("EPSG:4390", "EPSG:4326", always_xy=True)
                 df['lon'], df['lat'] = transformer.transform(df['E'].values, df['N'].values)
                 
