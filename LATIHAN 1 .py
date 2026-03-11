@@ -92,30 +92,17 @@ if check_password():
         """, unsafe_allow_html=True
     )
 
-    # --- BAHAGIAN HEADER UTAMA & BUTANG (KAD PUTIH) ---
-    col_main, col_btn = st.columns([3, 1])
+    # --- BAHAGIAN HEADER UTAMA (KAD PUTIH FULL WIDTH) ---
+    logo_html = f'<img src="{poli_logo_src}" width="160" style="margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">' if poli_logo_src else '<p style="color:red;">⚠️ Logo Poli tidak dijumpai</p>'
     
-    with col_main:
-        # Rekaan Kad Putih dengan Logo Tersusun Clean
-        logo_html = f'<img src="{poli_logo_src}" width="160" style="margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">' if poli_logo_src else '<p style="color:red;">⚠️ Logo Poli tidak dijumpai</p>'
-        
-        st.markdown(f"""
-        <div style="background-color: #ffffff; padding: 30px 20px 25px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;">
-            {logo_html}
-            <h1 style="color: #1e293b; font-family: 'Arial Black', Gadget, sans-serif; font-size: 38px; font-weight: 900; margin-bottom: 5px; line-height: 1.2; letter-spacing: -1px;">SISTEM SURVEY LOT</h1>
-            <p style="color: #64748b; font-size: 16px; margin-top: 0; font-weight: 500;">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with col_btn:
-        st.markdown("<br><br>", unsafe_allow_html=True) # Jarakkan sikit supaya center dengan kotak sebelah
-        if st.button("🔑 Tukar Kata Laluan", use_container_width=True):
-            reset_password_dialog()
-            
-        if st.button("🚪 Log Keluar", use_container_width=True):
-            st.session_state["password_correct"] = False
-            st.rerun()
-
+    st.markdown(f"""
+    <div style="background-color: #ffffff; padding: 30px 20px 25px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;">
+        {logo_html}
+        <h1 style="color: #1e293b; font-family: 'Arial Black', Gadget, sans-serif; font-size: 38px; font-weight: 900; margin-bottom: 5px; line-height: 1.2; letter-spacing: -1px;">SISTEM SURVEY LOT</h1>
+        <p style="color: #64748b; font-size: 16px; margin-top: 0; font-weight: 500;">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ================== RUANG UPLOAD FILE DI TENGAH ==================
@@ -151,6 +138,16 @@ if check_password():
     label_size_data = st.sidebar.slider("Saiz Bearing/Jarak", 5, 12, 7)
     label_size_luas = st.sidebar.slider("Saiz Tulisan LUAS", 8, 30, 14) 
     dist_offset_val = st.sidebar.slider("Jarak Label Stesen ke Luar", 0.5, 10.0, 2.0)
+
+    # ================== BUTANG AKAUN BAWAH SEKALI (SIDEBAR) ==================
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🔐 Akaun Pengguna")
+    if st.sidebar.button("🔑 Tukar Kata Laluan", use_container_width=True):
+        reset_password_dialog()
+        
+    if st.sidebar.button("🚪 Log Keluar", use_container_width=True):
+        st.session_state["password_correct"] = False
+        st.rerun()
 
     # ================== BACA DATA ==================
     if uploaded_file is not None:
