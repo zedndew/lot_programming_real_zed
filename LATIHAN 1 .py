@@ -36,7 +36,7 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        # --- CSS UNTUK STYLE GLASSMORPHISM (IKUT GAMBAR RUJUKAN 2) ---
+        # --- CSS UNTUK STYLE GLASSMORPHISM (IKUT GAMBAR RUJUKAN 2 & FIT SCREEN) ---
         st.markdown("""
             <style>
             /* Background penuh skrin - Warna lembut/warm */
@@ -45,106 +45,104 @@ def check_password():
                             url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop");
                 background-size: cover;
                 background-position: center;
+                height: 100vh;
+                overflow: hidden; /* Lock scroll */
             }
             
-            /* Sembunyikan header default streamlit */
+            /* Center kan kotak login */
+            .block-container {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                padding-top: 0 !important;
+            }
+
             header {visibility: hidden;}
             
-            /* Kotak Login (Frosted Glass) */
+            /* Kotak Login (Frosted Glass) - Diperkemaskan saiznya */
             div[data-testid="stVerticalBlock"] > div:has(input) {
                 background: rgba(255, 255, 255, 0.05) !important;
                 backdrop-filter: blur(20px) !important;
                 -webkit-backdrop-filter: blur(20px) !important;
                 border-radius: 35px !important;
                 border: 1px solid rgba(255, 255, 255, 0.15) !important;
-                padding: 60px !important;
+                padding: 40px !important; /* Kurangkan padding dari 60px ke 40px */
                 box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4) !important;
-                margin-top: 30px;
+                max-width: 450px;
+                margin: auto;
             }
 
-            /* Styling Input Field - Gelap transparan */
+            /* Rapatkan gap antara elemen */
+            div[data-testid="stVerticalBlock"] { gap: 0.5rem !important; }
+
+            /* Styling Input Field */
             input {
                 background-color: rgba(20, 20, 20, 0.7) !important;
                 color: #e0e0e0 !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 border-radius: 12px !important;
-                height: 50px;
+                height: 45px !important;
                 text-align: center;
-                font-family: 'Poppins', sans-serif;
             }
             
-            /* Label Input - Warna Gold Soft */
             label {
                 color: #d4a373 !important;
                 text-transform: uppercase !important;
-                font-size: 0.8rem !important;
+                font-size: 0.7rem !important; /* Kecilkan sikit font label */
                 letter-spacing: 3px !important;
                 text-align: center !important;
                 font-weight: 600 !important;
-                margin-bottom: 10px !important;
+                margin-bottom: 5px !important;
             }
 
-            /* Butang Unlock - Warna Bronze Aesthetic */
+            /* Butang Unlock */
             div.stButton > button {
                 background: #d4a373 !important;
                 color: #1e1e1e !important;
-                border: none !important;
                 border-radius: 12px !important;
                 font-weight: 800 !important;
-                text-transform: uppercase !important;
                 letter-spacing: 3px !important;
-                padding: 15px !important;
-                box-shadow: 0 10px 20px rgba(212, 163, 115, 0.3) !important;
-                transition: 0.4s ease;
-                margin-top: 20px;
+                padding: 10px !important;
+                margin-top: 10px !important;
             }
             
-            div.stButton > button:hover {
-                background: #e9c46a !important;
-                transform: translateY(-3px) !important;
-                box-shadow: 0 15px 25px rgba(212, 163, 115, 0.5) !important;
-            }
-
-            /* Header Tulisan Emas */
+            /* Tulisan Emas */
             .glass-header {
-                font-family: 'Playfair Display', serif;
                 color: #d4a373;
                 text-transform: uppercase;
                 letter-spacing: 5px;
-                font-size: 28px;
+                font-size: 22px; /* Kecilkan sikit supaya fit */
                 font-weight: 700;
-                line-height: 1.2;
-                margin-bottom: 5px;
+                margin-bottom: 2px;
             }
             .glass-sub {
                 color: rgba(255, 255, 255, 0.7);
-                font-size: 11px;
-                letter-spacing: 5px;
+                font-size: 9px;
+                letter-spacing: 4px;
                 text-transform: uppercase;
-                margin-bottom: 40px;
+                margin-bottom: 20px;
             }
             </style>
         """, unsafe_allow_html=True)
 
         _, col_mid, _ = st.columns([1, 1.4, 1])
         with col_mid:
-            st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
             # Logo dalam bulatan emas
             st.markdown("""
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <div style="background: #d4a373; padding: 10px; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(212, 163, 115, 0.5);">
-                        <img src="https://cdn-icons-png.flaticon.com/512/295/295128.png" width="40">
+                <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                    <div style="background: #d4a373; padding: 10px; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(212, 163, 115, 0.5);">
+                        <img src="https://cdn-icons-png.flaticon.com/512/295/295128.png" width="35">
                     </div>
                 </div>
             """, unsafe_allow_html=True)
             
-            st.markdown("<div class='glass-header'>SISTEM SURVEY<br>LOT PUO</div>", unsafe_allow_html=True)
+            st.markdown("<div class='glass-header'>SISTEM SURVEY LOT PUO</div>", unsafe_allow_html=True)
             st.markdown("<div class='glass-sub'>ZEDNDREW OFFICIAL INTERFACE</div>", unsafe_allow_html=True)
             
             user_id = st.text_input("ACCESS ID", placeholder="", key="user_id")
             password = st.text_input("PASSWORD", type="password", placeholder="", key="user_pass")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
             
             if st.button("UNLOCK SYSTEM", use_container_width=True):
                 if user_id == "zed" and password == "admin123":
@@ -163,7 +161,7 @@ def check_password():
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
     # Reset background ke putih untuk dashboard supaya tak silau
-    st.markdown("<style>.stApp {background: #ffffff !important;}</style>", unsafe_allow_html=True)
+    st.markdown("<style>.stApp {background: #ffffff !important; overflow: auto !important;}</style>", unsafe_allow_html=True)
     
     # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
