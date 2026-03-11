@@ -36,93 +36,142 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        # --- CUSTOM CSS UNTUK LOGIN AESTHETIC (PEACH THEME) ---
+        # --- CSS UNTUK STYLE GLASSMORPHISM (IKUT GAMBAR RUJUKAN 2) ---
         st.markdown("""
             <style>
-            /* Background Glow Effect */
+            /* Background penuh skrin - Warna lembut/warm */
             .stApp {
-                background: radial-gradient(circle at top right, #fff5f0, #ffe5d9);
+                background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                            url("https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop");
+                background-size: cover;
+                background-position: center;
             }
             
-            /* Login Container Customization */
+            /* Sembunyikan header default streamlit */
+            header {visibility: hidden;}
+            
+            /* Kotak Login (Frosted Glass) */
             div[data-testid="stVerticalBlock"] > div:has(input) {
-                background-color: rgba(255, 255, 255, 0.6);
-                padding: 40px;
-                border-radius: 25px;
-                border: 1px solid #ffcad4;
-                box-shadow: 0 10px 25px rgba(255, 183, 178, 0.2);
-                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.05) !important;
+                backdrop-filter: blur(20px) !important;
+                -webkit-backdrop-filter: blur(20px) !important;
+                border-radius: 35px !important;
+                border: 1px solid rgba(255, 255, 255, 0.15) !important;
+                padding: 60px !important;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4) !important;
+                margin-top: 30px;
             }
 
-            /* Input Fields styling */
+            /* Styling Input Field - Gelap transparan */
             input {
+                background-color: rgba(20, 20, 20, 0.7) !important;
+                color: #e0e0e0 !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 border-radius: 12px !important;
-                border: 1px solid #ffcad4 !important;
-                background-color: white !important;
+                height: 50px;
+                text-align: center;
+                font-family: 'Poppins', sans-serif;
+            }
+            
+            /* Label Input - Warna Gold Soft */
+            label {
+                color: #d4a373 !important;
+                text-transform: uppercase !important;
+                font-size: 0.8rem !important;
+                letter-spacing: 3px !important;
+                text-align: center !important;
+                font-weight: 600 !important;
+                margin-bottom: 10px !important;
             }
 
-            /* Button Styling - Peach Aesthetic */
+            /* Butang Unlock - Warna Bronze Aesthetic */
             div.stButton > button {
-                background: linear-gradient(135deg, #ffb7b2, #ff9aa2);
-                color: white;
-                border: none;
-                padding: 12px 20px;
-                border-radius: 12px;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(255, 154, 162, 0.3);
+                background: #d4a373 !important;
+                color: #1e1e1e !important;
+                border: none !important;
+                border-radius: 12px !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 3px !important;
+                padding: 15px !important;
+                box-shadow: 0 10px 20px rgba(212, 163, 115, 0.3) !important;
+                transition: 0.4s ease;
+                margin-top: 20px;
             }
             
             div.stButton > button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(255, 154, 162, 0.5);
-                color: white;
-                border: none;
+                background: #e9c46a !important;
+                transform: translateY(-3px) !important;
+                box-shadow: 0 15px 25px rgba(212, 163, 115, 0.5) !important;
             }
 
-            /* Title Styling */
-            .login-header {
-                font-family: 'Poppins', sans-serif;
-                color: #ff8b94;
-                font-weight: 800;
-                letter-spacing: -1px;
-                margin-bottom: 30px;
+            /* Header Tulisan Emas */
+            .glass-header {
+                font-family: 'Playfair Display', serif;
+                color: #d4a373;
+                text-transform: uppercase;
+                letter-spacing: 5px;
+                font-size: 28px;
+                font-weight: 700;
+                line-height: 1.2;
+                margin-bottom: 5px;
+            }
+            .glass-sub {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 11px;
+                letter-spacing: 5px;
+                text-transform: uppercase;
+                margin-bottom: 40px;
             }
             </style>
         """, unsafe_allow_html=True)
 
-        _, col_mid, _ = st.columns([1, 1.2, 1])
+        _, col_mid, _ = st.columns([1, 1.4, 1])
         with col_mid:
-            st.markdown("<h1 class='login-header' style='text-align: center;'>🍑 Sistem Survey Lot PUO</h1>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align: center; margin-top: 20px;'>", unsafe_allow_html=True)
+            # Logo dalam bulatan emas
+            st.markdown("""
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <div style="background: #d4a373; padding: 10px; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(212, 163, 115, 0.5);">
+                        <img src="https://cdn-icons-png.flaticon.com/512/295/295128.png" width="40">
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
             
-            user_id = st.text_input("👤 ID Pengguna", placeholder="Masukkan ID anda", key="user_id")
-            password = st.text_input("🔑 Kata Laluan", type="password", placeholder="Masukkan password", key="user_pass")
+            st.markdown("<div class='glass-header'>SISTEM SURVEY<br>LOT PUO</div>", unsafe_allow_html=True)
+            st.markdown("<div class='glass-sub'>ZEDNDREW OFFICIAL INTERFACE</div>", unsafe_allow_html=True)
             
-            st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+            user_id = st.text_input("ACCESS ID", placeholder="", key="user_id")
+            password = st.text_input("PASSWORD", type="password", placeholder="", key="user_pass")
             
-            if st.button("Log Masuk ✨", use_container_width=True):
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            if st.button("UNLOCK SYSTEM", use_container_width=True):
                 if user_id == "zed" and password == "admin123":
                     st.session_state["password_correct"] = True
                     st.rerun()
                 else:
-                    st.error("😕 ID atau Kata Laluan salah.")
+                    st.error("❌ Invalid Access ID or Password.")
             
-            if st.button("❓ Lupa Kata Laluan?", use_container_width=True):
+            if st.button("❓ FORGOT PASSWORD?", use_container_width=True):
                 reset_password_dialog()
+            st.markdown("</div>", unsafe_allow_html=True)
                 
         return False
     return True
 
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
+    # Reset background ke putih untuk dashboard supaya tak silau
+    st.markdown("<style>.stApp {background: #ffffff !important;}</style>", unsafe_allow_html=True)
     
     # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
         """
-        <div style="background: linear-gradient(135deg, #ffb7b2, #ff9aa2); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+        <div style="background: linear-gradient(135deg, #d4a373, #bc8a5f); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="80" style="border-radius: 50%; border: 3px solid white;">
             <h3 style="color: white; margin-top: 10px; font-family: sans-serif;">Hai, Zed!</h3>
-            <p style="color: #ffffff; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
+            <p style="color: #f0f0f0; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
         </div>
         """, unsafe_allow_html=True
     )
@@ -138,8 +187,8 @@ if check_password():
     with col_text:
         st.markdown("""
             <style>
-                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; }
-                .sub-title { font-size: 20px; color: #555; margin-top: 0px; }
+                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; color: #1e1e1e; }
+                .sub-title { font-size: 20px; color: #d4a373; margin-top: 0px; font-weight: bold; }
             </style>
             <div>
                 <h1 class="main-title">SISTEM SURVEY LOT</h1>
@@ -161,8 +210,8 @@ if check_password():
     # --- PILIHAN WARNA ---
     st.sidebar.markdown("---")
     st.sidebar.subheader("🎨 Pilihan Warna")
-    poly_color = st.sidebar.color_picker("Warna Kawasan (Poligon)", "#ffb7b2") 
-    line_color = st.sidebar.color_picker("Warna Garisan Sempadan", "#ff8b94") 
+    poly_color = st.sidebar.color_picker("Warna Kawasan (Poligon)", "#d4a373") 
+    line_color = st.sidebar.color_picker("Warna Garisan Sempadan", "#1e1e1e") 
     poly_opacity = st.sidebar.slider("Kelegapan Kawasan", 0.0, 1.0, 0.3)
 
     st.sidebar.markdown("---")
