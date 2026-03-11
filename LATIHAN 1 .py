@@ -8,7 +8,7 @@ import os
 import folium
 from streamlit_folium import folium_static
 from pyproj import Transformer
-import base64  # <-- Untuk baca gambar tempatan
+import base64
 
 # ================== FUNGSI TUKAR DMS ==================
 def format_dms(decimal_degree):
@@ -57,7 +57,7 @@ def check_password():
 if check_password():
     
     # --- BACA GAMBAR PROFIL TEMPATAN (GOJO) ---
-    profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" # Gambar asal (fallback)
+    profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
     if os.path.exists("gojo_image.jpeg"):
         with open("gojo_image.jpeg", "rb") as img_file:
             b64_str = base64.b64encode(img_file.read()).decode()
@@ -85,32 +85,36 @@ if check_password():
         """, unsafe_allow_html=True
     )
 
-    # --- BAHAGIAN HEADER UTAMA ---
-    col_logo, col_text = st.columns([1.2, 4])
+    # --- BAHAGIAN HEADER UTAMA (KOD ASAL KAU) ---
+    col_logo, col_text = st.columns([1, 4])
     with col_logo:
+        # check if file exists
         if os.path.exists("Poli_Logo.png"):
-            st.image("Poli_Logo.png", width=180)
+            st.image("Poli_Logo.png", width=120)
         else:
             st.warning("⚠️ Logo 'Poli_Logo.png' tidak dijumpai.")
-
+    
     with col_text:
         st.markdown("""
-            <style>
-                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; }
-                .sub-title { font-size: 20px; color: #555; margin-top: 0px; }
-            </style>
-            <div>
-                <h1 class="main-title">SISTEM SURVEY LOT</h1>
-                <p class="sub-title">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
-            </div>
+        <style>
+        .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 35px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -1px; }
+        .sub-title { font-size: 16px; color: #555; margin-top: 0px; }
+        </style>
+        <div>
+            <h1 class="main-title">SISTEM SURVEY LOT</h1>
+            <p class="sub-title">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
+        </div>
         """, unsafe_allow_html=True)
-    
+        
     st.markdown("<hr style='border: 1px solid #eee; margin-top: 0px;'>", unsafe_allow_html=True)
 
+    # ================== RUANG UPLOAD FILE DI TENGAH ==================
+    st.subheader("📂 Muat Naik Data CSV")
+    uploaded_file = st.file_uploader("Upload fail koordinat anda di sini", type=["csv"])
+    
     # ================== SIDEBAR SETTINGS ==================
     st.sidebar.header("⚙️ Tetapan Paparan")
-    uploaded_file = st.sidebar.file_uploader("Upload fail CSV", type=["csv"])
-
+    
     st.sidebar.markdown("---")
     st.sidebar.subheader("🌍 Mod Peta Interaktif")
     show_interactive_map = st.sidebar.toggle("On/Off Peta Satelit", value=False)
@@ -139,6 +143,7 @@ if check_password():
     # ================== BACA DATA ==================
     if uploaded_file is not None:
         try:
+            st.markdown("---")
             df = pd.read_csv(uploaded_file)
             
             if all(col in df.columns for col in ['STN', 'E', 'N']):
