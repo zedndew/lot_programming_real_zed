@@ -115,7 +115,7 @@ if check_password():
     label_size_stn = st.sidebar.slider("Saiz Bulatan Stesen", 15, 30, 22) 
     label_size_data = st.sidebar.slider("Saiz Bearing/Jarak", 5, 12, 7)
     label_size_luas = st.sidebar.slider("Saiz Tulisan LUAS", 8, 30, 14) 
-    dist_offset = st.sidebar.slider("Jarak Label Stesen ke Luar", 0.5, 5.0, 1.5)
+    dist_offset_val = st.sidebar.slider("Jarak Label Stesen ke Luar", 0.5, 10.0, 2.0)
 
     # ================== BACA DATA ==================
     if uploaded_file is not None:
@@ -181,13 +181,17 @@ if check_password():
                         dE, dN = p2['E'] - p1['E'], p2['N'] - p1['N']
                         dist, bear = np.sqrt(dE**2 + dN**2), (np.degrees(np.arctan2(dE, dN)) + 360) % 360
                         angle = -np.degrees(np.arctan2(p2['lat'] - p1['lat'], p2['lon'] - p1['lon']))
+                        
                         if angle > 90: angle -= 180
                         elif angle < -90: angle += 180
                         
-                        v_offset = -20 if dN >= 0 else -10
+                        # FIX LOGIK OFFSET: Teks ditolak keluar berdasarkan kedudukan Bearing
+                        # Jika bearing di bahagian Timur (0-180), tolak ke atas, jika Barat (180-360), tolak ke bawah
+                        v_offset = -35 if (bear < 90 or bear > 270) else 15
+                        
                         folium.Marker([ (p1['lat'] + p2['lat']) / 2, (p1['lon'] + p2['lon']) / 2],
-                            icon=folium.DivIcon(html=f'''<div style="transform: rotate({angle}deg); text-align: center; width: 160px; margin-left: -80px; margin-top: {v_offset}px;">
-                                <div style="font-size: {label_size_data}pt; color: white; text-shadow: 2px 2px 3px black; font-weight: bold;">{format_dms(bear)}<br><span style="color: #FFD700;">{dist:.2f}m</span></div></div>''')).add_to(m)
+                            icon=folium.DivIcon(html=f'''<div style="transform: rotate({angle}deg); text-align: center; width: 200px; margin-left: -100px; margin-top: {v_offset}px;">
+                                <div style="font-size: {label_size_data}pt; color: white; text-shadow: 2px 2px 4px black; font-weight: bold; background: rgba(0,0,0,0.2); border-radius: 5px;">{format_dms(bear)}<br><span style="color: #FFD700;">{dist:.2f}m</span></div></div>''')).add_to(m)
                         
                         folium.Marker([p1['lat'], p1['lon']], icon=folium.DivIcon(html=f'''<div style="background-color: white; border: 2px solid red; border-radius: 50%; width: {label_size_stn}px; height: {label_size_stn}px; display: flex; align-items: center; justify-content: center; font-size: {label_size_stn*0.6}px; font-weight: bold; color: black; margin-left: -{label_size_stn/2}px; margin-top: -{label_size_stn/2}px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5);">{int(p1["STN"])}</div>''')).add_to(m)
 
@@ -222,7 +226,10 @@ if check_password():
                         txt_angle = np.degrees(np.arctan2(dN, dE))
                         if txt_angle > 90: txt_angle -= 180
                         elif txt_angle < -90: txt_angle += 180
-                        ax.text((p1['E']+p2['E'])/2, (p1['N']+p2['N'])/2, f"{format_dms(bear)}\n{dist:.2f}m", fontsize=label_size_data, color='brown', fontweight='bold', ha='center', rotation=txt_angle)
+                        
+                        # OFFSET MATPLOTLIB: Tolak sikit supaya tak kena garisan
+                        ax.text((p1['E']+p2['E'])/2, (p1['N']+p2['N'])/2, f"{format_dms(bear)}\n{dist:.2f}m", fontsize=label_size_data, color='brown', fontweight='bold', ha='center', rotation=txt_angle, va='bottom' if dN > 0 else 'top')
+                        
                         ax.scatter(p1['E'], p1['N'], color='white', edgecolor='red', s=300, zorder=5, linewidth=2)
                         ax.text(p1['E'], p1['N'], str(int(p1['STN'])), fontsize=label_size_stn/2, color='black', fontweight='bold', ha='center', va='center', zorder=6)
 
