@@ -36,79 +36,97 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        # --- CUSTOM CSS UNTUK LOGIN AESTHETIC (DARK BROWN) ---
+        # --- CSS COMPACT & AESTHETIC (FIT TO SCREEN) ---
         st.markdown("""
             <style>
-            /* Background utama login */
+            /* Buang scrollbar dan paksa tinggi 100% */
+            html, body, [data-testid="stAppViewContainer"] {
+                overflow: hidden;
+                height: 100vh;
+            }
+
             .stApp {
-                background: linear-gradient(rgba(26, 18, 11, 0.85), rgba(44, 34, 24, 0.9)), 
-                            url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+                background: linear-gradient(rgba(26, 18, 11, 0.9), rgba(44, 34, 24, 0.95)), 
+                            url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');
                 background-size: cover;
+                background-position: center;
             }
 
-            /* Container Box Login */
+            /* Kecilkan container utama */
             [data-testid="stVerticalBlock"] > div:has(input) {
-                background: rgba(44, 34, 24, 0.6);
-                backdrop-filter: blur(15px);
-                padding: 40px;
-                border-radius: 25px;
-                border: 1px solid rgba(166, 123, 91, 0.3);
-                box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+                background: rgba(35, 25, 18, 0.7);
+                backdrop-filter: blur(10px);
+                padding: 25px 35px !important;
+                border-radius: 20px;
+                border: 1px solid rgba(166, 123, 91, 0.2);
+                max-width: 450px;
+                margin: auto;
             }
 
-            /* Input Style */
+            /* Kecilkan gap antara elemen */
+            [data-testid="stVerticalBlock"] {
+                gap: 0.5rem !important;
+            }
+
+            /* Input Style (Lebih nipis) */
             .stTextInput input {
-                background-color: rgba(255, 255, 255, 0.05) !important;
+                background-color: rgba(255, 255, 255, 0.03) !important;
                 color: #D2B48C !important;
-                border: 1px solid rgba(166, 123, 91, 0.5) !important;
-                border-radius: 12px !important;
-                padding: 12px !important;
+                border: 1px solid rgba(166, 123, 91, 0.3) !important;
+                border-radius: 10px !important;
+                padding: 8px !important;
+                font-size: 14px !important;
             }
 
-            /* Button Log Masuk */
+            /* Button Log Masuk (Compact) */
             div.stButton > button:first-child {
-                background: linear-gradient(135deg, #6F4E37, #3C2A21) !important;
+                background: linear-gradient(135deg, #5D4037, #2C1B14) !important;
                 color: #F5F5DC !important;
-                border: none !important;
-                border-radius: 12px !important;
-                height: 50px !important;
-                font-weight: bold !important;
-                letter-spacing: 1px !important;
-                transition: 0.3s all ease;
-                margin-top: 20px !important;
-            }
-            
-            div.stButton > button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(111, 78, 55, 0.4);
-                border: 1px solid #A67B5B !important;
+                border-radius: 10px !important;
+                height: 42px !important;
+                font-size: 14px !important;
+                font-weight: 600 !important;
+                margin-top: 10px !important;
             }
 
-            /* Lupa Kata Laluan Button Style */
+            /* Button Lupa Password (Lebih kecil) */
             div.stButton:nth-child(5) > button {
                 background: transparent !important;
-                color: #A67B5B !important;
-                border: 1px solid rgba(166, 123, 91, 0.3) !important;
-                font-size: 0.85em !important;
+                color: #8D6E63 !important;
+                border: none !important;
+                font-size: 12px !important;
+                text-decoration: underline;
             }
 
-            /* Label text color */
-            .stWidgetLabel p {
-                color: #A67B5B !important;
-                font-family: 'Georgia', serif;
-                letter-spacing: 1px;
+            /* Font saiz tajuk */
+            h1.login-title {
+                font-size: 28px !important;
+                margin-bottom: 0px !important;
+                color: #D2B48C;
+                font-family: 'Garamond', serif;
             }
+            
+            p.login-sub {
+                font-size: 12px !important;
+                color: #8D6E63;
+                margin-bottom: 15px !important;
+            }
+
+            /* Hide Streamlit Header/Footer */
+            header {visibility: hidden;}
+            footer {visibility: hidden;}
             </style>
         """, unsafe_allow_html=True)
 
-        _, col_mid, _ = st.columns([1, 1.2, 1])
+        # Letakkan di tengah skrin secara vertical
+        st.markdown("<div style='height: 15vh;'></div>", unsafe_allow_html=True)
+        
+        _, col_mid, _ = st.columns([1, 1, 1])
         with col_mid:
-            st.markdown("<br><br>", unsafe_allow_html=True)
-            st.markdown("<h1 style='text-align: center; color: #D2B48C; font-family: Garamond, serif; margin-bottom: 5px;'>Sistem Survey Lot</h1>", unsafe_allow_html=True)
-            st.markdown("<p style='text-align: center; color: #A67B5B; margin-top: -10px; font-size: 0.9em;'>POLITEKNIK UNGKU OMAR</p>", unsafe_allow_html=True)
-            st.markdown("<hr style='border: 0.5px solid rgba(166, 123, 91, 0.3);'>", unsafe_allow_html=True)
+            st.markdown("<h1 class='login-title' style='text-align: center;'>Sistem Survey Lot</h1>", unsafe_allow_html=True)
+            st.markdown("<p class='login-sub' style='text-align: center;'>POLITEKNIK UNGKU OMAR</p>", unsafe_allow_html=True)
             
-            user_id = st.text_input("ID PENGGUNA", key="user_id", placeholder="Masukkan ID anda...")
+            user_id = st.text_input("ID PENGGUNA", key="user_id", placeholder="ID Pengguna")
             password = st.text_input("KATA LALUAN", type="password", key="user_pass", placeholder="••••••••")
             
             if st.button("LOG MASUK", use_container_width=True):
@@ -125,9 +143,8 @@ def check_password():
 
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
-    
-    # Reset background ke asal supaya tak ganggu paparan data
-    st.markdown("""<style>.stApp { background: none; }</style>""", unsafe_allow_html=True)
+    # Kembalikan scrollbar selepas login
+    st.markdown("""<style>html, body, [data-testid="stAppViewContainer"] { overflow: auto; height: auto; } .stApp { background: none; } header {visibility: visible;}</style>""", unsafe_allow_html=True)
 
     # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
@@ -240,7 +257,6 @@ if check_password():
                 st.subheader("📐 Paparan Pelan Ukur")
 
                 if show_interactive_map:
-                    # --- MOD PETA INTERAKTIF ---
                     google_map_url = 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
                     if map_provider == "Standard Map":
                         google_map_url = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
@@ -270,7 +286,6 @@ if check_password():
                     folium_static(m, width=900, height=550)
 
                 else:
-                    # --- MOD MATPLOTLIB ---
                     if plot_theme == "Dark Mode": bg_color, grid_color = "#121212", "#555555"
                     elif plot_theme == "Blueprint": bg_color, grid_color = "#003366", "#004080"
                     else: bg_color, grid_color = "#ffffff", "#aaaaaa"
