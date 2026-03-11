@@ -8,7 +8,7 @@ import os
 import folium
 from streamlit_folium import folium_static
 from pyproj import Transformer
-import base64  # <-- Tambah library ni untuk baca gambar tempatan
+import base64  # <-- Untuk baca gambar tempatan
 
 # ================== FUNGSI TUKAR DMS ==================
 def format_dms(decimal_degree):
@@ -63,13 +63,24 @@ if check_password():
             b64_str = base64.b64encode(img_file.read()).decode()
             profile_img_src = f"data:image/jpeg;base64,{b64_str}"
 
-    # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
+    # --- 👤 PROFIL PENGGUNA AESTHETIC (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
         f"""
-        <div style="background: linear-gradient(135deg, #00B4DB, #0083B0); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-            <img src="{profile_img_src}" width="80" height="80" style="border-radius: 50%; border: 3px solid white; object-fit: cover;">
-            <h3 style="color: white; margin-top: 10px; font-family: sans-serif;">Hai, Zed!</h3>
-            <p style="color: #e0e0e0; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
+        <div style="background: linear-gradient(135deg, #141E30, #243B55); 
+                    padding: 15px; 
+                    border-radius: 15px; 
+                    display: flex; 
+                    align-items: center; 
+                    gap: 15px; 
+                    margin-bottom: 25px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    border: 1px solid rgba(255,255,255,0.1);">
+            <img src="{profile_img_src}" width="65" height="65" 
+                 style="border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover; box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);">
+            <div style="text-align: left;">
+                <h3 style="color: white; margin: 0; font-family: 'Segoe UI', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px;">Hai, Zed! 👋</h3>
+                <p style="color: #00d2ff; font-size: 0.85rem; margin: 2px 0 0 0; font-weight: 600;">Pakar Ukur Lot PUO ✨</p>
+            </div>
         </div>
         """, unsafe_allow_html=True
     )
