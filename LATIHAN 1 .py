@@ -70,6 +70,13 @@ if check_password():
             b64_logo = base64.b64encode(img_file.read()).decode()
             poli_logo_src = f"data:image/png;base64,{b64_logo}"
 
+    # --- BACA VIDEO BACKGROUND ---
+    video_bg_src = ""
+    if os.path.exists("video_bunga.mp4"):
+        with open("video_bunga.mp4", "rb") as video_file:
+            video_b64 = base64.b64encode(video_file.read()).decode()
+            video_bg_src = f"data:video/mp4;base64,{video_b64}"
+
     # --- 👤 PROFIL PENGGUNA AESTHETIC (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
         f"""
@@ -92,14 +99,27 @@ if check_password():
         """, unsafe_allow_html=True
     )
 
-    # --- BAHAGIAN HEADER UTAMA (KAD PUTIH FULL WIDTH) ---
+    # --- BAHAGIAN HEADER UTAMA (KAD DGN VIDEO BACKGROUND) ---
     logo_html = f'<img src="{poli_logo_src}" width="160" style="margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">' if poli_logo_src else '<p style="color:red;">⚠️ Logo Poli tidak dijumpai</p>'
     
+    if video_bg_src:
+        bg_html = f'''
+        <video autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+            <source src="{video_bg_src}" type="video/mp4">
+        </video>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.65); z-index: 1;"></div>
+        '''
+    else:
+        bg_html = '<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 0;"></div>'
+
     st.markdown(f"""
-    <div style="background-color: #ffffff; padding: 30px 20px 25px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;">
-        {logo_html}
-        <h1 style="color: #1e293b; font-family: 'Arial Black', Gadget, sans-serif; font-size: 38px; font-weight: 900; margin-bottom: 5px; line-height: 1.2; letter-spacing: -1px;">SISTEM SURVEY LOT</h1>
-        <p style="color: #64748b; font-size: 16px; margin-top: 0; font-weight: 500;">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
+    <div style="position: relative; overflow: hidden; padding: 30px 20px 25px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; min-height: 200px;">
+        {bg_html}
+        <div style="position: relative; z-index: 2;">
+            {logo_html}
+            <h1 style="color: #1e293b; font-family: 'Arial Black', Gadget, sans-serif; font-size: 38px; font-weight: 900; margin-bottom: 5px; line-height: 1.2; letter-spacing: -1px; text-shadow: 2px 2px 10px rgba(255,255,255,0.9);">SISTEM SURVEY LOT</h1>
+            <p style="color: #1e293b; font-size: 16px; margin-top: 0; font-weight: 800; text-shadow: 1px 1px 5px rgba(255,255,255,0.9);">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
