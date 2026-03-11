@@ -72,8 +72,8 @@ if check_password():
 
     # --- BACA VIDEO BACKGROUND ---
     video_bg_src = ""
-    if os.path.exists("video_bunga.mp4"):
-        with open("video_bunga.mp4", "rb") as video_file:
+    if os.path.exists("video_baru.mp4"):
+        with open("video_baru.mp4", "rb") as video_file:
             video_b64 = base64.b64encode(video_file.read()).decode()
             video_bg_src = f"data:video/mp4;base64,{video_b64}"
 
