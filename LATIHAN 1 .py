@@ -12,11 +12,11 @@ from pyproj import Transformer
 # Set page configuration
 st.set_page_config(page_title="Sistem Survey Lot PUO", page_icon="🔐", layout="wide")
 
-# ================== CSS UNTUK LOGIN (STABIL & KEMAS) ==================
-def local_css():
+# ================== CSS UNTUK PAKSA TENGAH & NO SCROLL ==================
+def apply_login_css():
     st.markdown("""
         <style>
-        /* Lock skrin masa login */
+        /* Lock background dan buang scrollbar masa login */
         html, body, [data-testid="stAppViewContainer"] {
             background-color: #1b1714 !important;
             overflow: hidden !important;
@@ -25,35 +25,36 @@ def local_css():
         /* Hilangkan header/footer Streamlit */
         header, footer, [data-testid="stToolbar"] { visibility: hidden; }
 
-        /* Container Kotak Login tepat di tengah */
-        .login-box {
+        /* Container Login tepat di tengah skrin */
+        .login-frame {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 10000;
+            width: 450px;
+            z-index: 9999;
             background-color: #2c2420;
-            padding: 45px;
-            border-radius: 30px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             border: 1px solid #3d332d;
             text-align: center;
         }
 
-        .login-box h2 { color: #dcd0c0; margin-bottom: 5px; font-family: sans-serif; }
-        .login-box p { color: #a89081; font-size: 0.9em; margin-bottom: 30px; }
+        /* Branding */
+        .login-frame h2 { color: #dcd0c0; font-family: sans-serif; margin-bottom: 5px; }
+        .login-frame p { color: #a89081; font-size: 14px; margin-bottom: 25px; }
 
-        /* Styling Input */
+        /* Input Styling */
         div[data-baseweb="input"] {
             background-color: #3d332d !important;
             border-radius: 12px !important;
             border: 1px solid #5a4a42 !important;
         }
         input { color: #dcd0c0 !important; }
-        label { color: #a89081 !important; font-weight: bold !important; }
+        label { color: #a89081 !important; font-weight: bold !important; font-size: 12px !important; }
 
-        /* Styling Button */
+        /* Button Styling */
         .stButton > button {
             background-color: #634e42 !important;
             color: white !important;
@@ -68,10 +69,13 @@ def local_css():
             background-color: #8a6d5d !important;
             transform: scale(1.02);
         }
+        
+        /* Error message styling */
+        .stAlert { margin-top: 10px; }
         </style>
     """, unsafe_allow_html=True)
 
-# ================== FUNGSI ASAL (JANGAN UBAH) ==================
+# ================== FUNGSI ASAL KAU (100% TAK UBAH) ==================
 def format_dms(decimal_degree):
     d = int(decimal_degree)
     m = int((decimal_degree - d) * 60)
@@ -93,10 +97,10 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        local_css() # Apply login CSS
+        apply_login_css() # Panggil CSS login
         
-        # Start Login Container
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        # Buka container HTML
+        st.markdown('<div class="login-frame">', unsafe_allow_html=True)
         st.markdown("""
             <img src="https://cdn-icons-png.flaticon.com/512/6195/6195696.png" width="80">
             <h2>Sistem Survey Lot</h2>
@@ -113,18 +117,18 @@ def check_password():
                 st.session_state["password_correct"] = True
                 st.rerun()
             else:
-                st.error("😕 Maklumat salah.")
+                st.error("😕 ID atau Kata Laluan salah.")
         
         if st.button("Lupa Kata Laluan?", key="forgot"):
             reset_password_dialog()
 
-        st.markdown('</div>', unsafe_allow_html=True) # Close Login Container
+        st.markdown('</div>', unsafe_allow_html=True) # Tutup container
         return False
     return True
 
-# ================== MAIN APP (START AFTER LOGIN) ==================
+# ================== MAIN APP (LOGIC ASAL KAU SEMUA KAT SINI) ==================
 if check_password():
-    # Unlock scroll & Reset background untuk main app
+    # Unlock skrin balik untuk app utama
     st.markdown("""<style>html, body, [data-testid="stAppViewContainer"] { overflow: auto !important; background-color: white !important; } header, footer { visibility: visible; }</style>""", unsafe_allow_html=True)
 
     # --- 👤 PROFIL PENGGUNA (SIDEBAR) ---
@@ -148,39 +152,47 @@ if check_password():
 
     with col_text:
         st.markdown("""
+            <style>
+                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; }
+                .sub-title { font-size: 20px; color: #555; margin-top: 0px; }
+            </style>
             <div>
-                <h1 style="font-family: 'Arial Black'; font-size: 45px; margin-bottom: -10px;">SISTEM SURVEY LOT</h1>
-                <p style="font-size: 18px; color: #555;">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
+                <h1 class="main-title">SISTEM SURVEY LOT</h1>
+                <p class="sub-title">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
             </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("---")
+    st.markdown("<hr style='border: 1px solid #eee; margin-top: 0px;'>", unsafe_allow_html=True)
 
     # ================== SIDEBAR SETTINGS ==================
     st.sidebar.header("⚙️ Tetapan Paparan")
     uploaded_file = st.sidebar.file_uploader("Upload fail CSV", type=["csv"])
 
     st.sidebar.markdown("---")
+    st.sidebar.subheader("🌍 Mod Peta Interaktif")
     show_interactive_map = st.sidebar.toggle("On/Off Peta Satelit", value=False)
     map_provider = st.sidebar.radio("Pilih Jenis Peta:", ["Satelit (Hybrid)", "Standard Map"], disabled=not show_interactive_map)
 
     st.sidebar.markdown("---")
-    poly_color = st.sidebar.color_picker("Warna Kawasan", "#6036AF") 
-    line_color = st.sidebar.color_picker("Warna Sempadan", "#FFFF00") 
-    poly_opacity = st.sidebar.slider("Kelegapan", 0.0, 1.0, 0.3)
+    st.sidebar.subheader("🎨 Pilihan Warna")
+    poly_color = st.sidebar.color_picker("Warna Kawasan (Poligon)", "#6036AF") 
+    line_color = st.sidebar.color_picker("Warna Garisan Sempadan", "#FFFF00") 
+    poly_opacity = st.sidebar.slider("Kelegapan Kawasan", 0.0, 1.0, 0.3)
 
-    plot_theme = st.sidebar.selectbox("Tema Matplotlib", ["Light Mode", "Dark Mode", "Blueprint"])
-    show_bg_grid = st.sidebar.checkbox("Papar Grid", value=True)
-    grid_interval = st.sidebar.slider("Jarak Grid", 5, 50, 10)
+    st.sidebar.markdown("---")
+    plot_theme = st.sidebar.selectbox("Tema Warna Pelan Matplotlib", ["Light Mode", "Dark Mode", "Blueprint"])
+    show_bg_grid = st.sidebar.checkbox("Papar Grid Latar", value=True)
+    grid_interval = st.sidebar.slider("Jarak Selang Grid", 5, 50, 10)
 
     st.sidebar.markdown("---")
     st.sidebar.subheader("🖋️ Gaya Label")
     show_luas_label = st.sidebar.checkbox("Papar Label LUAS", value=True)
-    label_size_stn = st.sidebar.slider("Saiz Stesen", 15, 30, 22) 
-    label_size_data = st.sidebar.slider("Saiz Data", 5, 12, 7)
-    label_size_luas = st.sidebar.slider("Saiz Luas", 8, 30, 14) 
+    label_size_stn = st.sidebar.slider("Saiz Bulatan Stesen", 15, 30, 22) 
+    label_size_data = st.sidebar.slider("Saiz Bearing/Jarak", 5, 12, 7)
+    label_size_luas = st.sidebar.slider("Saiz Tulisan LUAS", 8, 30, 14) 
+    dist_offset = st.sidebar.slider("Jarak Label Stesen ke Luar", 0.5, 5.0, 1.5)
 
-    # ================== LOGIC PENGIRAAN & PAPARAN (KOD ASAL) ==================
+    # ================== BACA DATA & PENGIRAAN ASAL ==================
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
@@ -198,53 +210,74 @@ if check_password():
 
                 # Eksport QGIS
                 geojson_dict = {"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": mapping(poly_ll), "properties": {"Area_sqm": round(area, 2)}}]}
-                st.sidebar.download_button(label="🚀 Export to QGIS", data=json.dumps(geojson_dict), file_name="survey_lot.geojson", mime="application/json", use_container_width=True)
+                st.sidebar.download_button(label="🚀 Export to QGIS (.geojson)", data=json.dumps(geojson_dict), file_name="survey_lot.geojson", mime="application/json", use_container_width=True)
 
                 # Metrik
                 st.markdown("### 📊 Ringkasan Lot")
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("Luas (m²)", f"{area:.2f}")
-                c2.metric("Luas (Ekar)", f"{area/4046.856:.4f}")
-                c3.metric("Stesen", len(df))
-                c4.metric("Status", "Tutup" if poly_geom.is_valid else "Ralat")
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Luas (m²)", f"{area:.2f}")
+                col2.metric("Luas (Ekar)", f"{area/4046.856:.4f}")
+                col3.metric("Bilangan Stesen", len(df))
+                col4.metric("Status", "Tutup" if poly_geom.is_valid else "Ralat")
 
                 st.markdown("---")
+                st.subheader("📐 Paparan Pelan Ukur")
 
                 if show_interactive_map:
-                    google_url = 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' if map_provider == "Satelit (Hybrid)" else 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
-                    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=20, tiles=google_url, attr='Google')
-                    points = [[r['lat'], r['lon']] for _, r in df.iterrows()]
-                    folium.Polygon(locations=points, color=line_color, fill=True, fill_color=poly_color, fill_opacity=poly_opacity).add_to(m)
+                    google_map_url = 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
+                    if map_provider == "Standard Map":
+                        google_map_url = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
+
+                    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=20, max_zoom=22, tiles=google_map_url, attr='Google')
+                    points_map = [[r['lat'], r['lon']] for _, r in df.iterrows()]
+                    folium.Polygon(locations=points_map, color=line_color, weight=3, fill=True, fill_color=poly_color, fill_opacity=poly_opacity).add_to(m)
                     
                     for i in range(len(df)):
                         p1, p2 = df.iloc[i], df.iloc[(i + 1) % len(df)]
                         dE, dN = p2['E'] - p1['E'], p2['N'] - p1['N']
                         dist, bear = np.sqrt(dE**2 + dN**2), (np.degrees(np.arctan2(dE, dN)) + 360) % 360
                         folium.Marker([p1['lat'], p1['lon']], icon=folium.DivIcon(html=f'<div style="background-color: white; border: 2px solid red; border-radius: 50%; width: 20px; height: 20px; text-align: center; font-weight: bold;">{int(p1["STN"])}</div>')).add_to(m)
-
-                    folium_static(m, width=900, height=550)
-                else:
-                    if plot_theme == "Dark Mode": bg, gr = "#121212", "#555"
-                    elif plot_theme == "Blueprint": bg, gr = "#003366", "#004080"
-                    else: bg, gr = "#ffffff", "#aaa"
-
-                    fig, ax = plt.subplots(figsize=(10, 8))
-                    fig.patch.set_facecolor(bg); ax.set_facecolor(bg)
-                    ax.plot(*(line_geom.xy), color=line_color, linewidth=2)
-                    ax.fill(*(poly_geom.exterior.xy), color=poly_color, alpha=poly_opacity)
-                    if show_bg_grid: ax.grid(True, color=gr, linestyle='--')
                     
                     if show_luas_label:
-                        ax.text(centroid_m.x, centroid_m.y, f"{area:.2f} m²", fontsize=label_size_luas, fontweight='bold', ha='center', bbox=dict(boxstyle='round', fc='white', ec='green'))
+                        folium.Marker([df['lat'].mean(), df['lon'].mean()], icon=folium.DivIcon(html=f'<div style="font-size: {label_size_luas}pt; color: #00FF00; text-shadow: 2px 2px 4px black; font-weight: bold;">{area:.2f} m²</div>')).add_to(m)
                     
+                    folium_static(m, width=900, height=550)
+
+                else:
+                    if plot_theme == "Dark Mode": bg_color, grid_color = "#121212", "#555555"
+                    elif plot_theme == "Blueprint": bg_color, grid_color = "#003366", "#004080"
+                    else: bg_color, grid_color = "#ffffff", "#aaaaaa"
+
+                    fig, ax = plt.subplots(figsize=(10, 8))
+                    fig.patch.set_facecolor(bg_color); ax.set_facecolor(bg_color)
+                    ax.plot(*(line_geom.xy), linewidth=2, color=line_color, zorder=4)
+                    ax.fill(*(poly_geom.exterior.xy), color=poly_color, alpha=poly_opacity)
+
+                    if show_bg_grid:
+                        ax.grid(True, color=grid_color, linestyle='--', alpha=0.5)
+                        ax.xaxis.set_major_locator(plt.MultipleLocator(grid_interval))
+                        ax.yaxis.set_major_locator(plt.MultipleLocator(grid_interval))
+                    else: ax.axis('off')
+
+                    if show_luas_label:
+                        ax.text(centroid_m.x, centroid_m.y, f"{area:.2f} m²", fontsize=label_size_luas, fontweight='bold', color='darkgreen', ha='center', bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.9, ec='green'), zorder=10)
+
                     for i in range(len(df)):
-                        p1 = df.iloc[i]
-                        ax.scatter(p1['E'], p1['N'], color='white', edgecolor='red', s=200, zorder=5)
-                        ax.text(p1['E'], p1['N'], str(int(p1['STN'])), fontsize=label_size_stn/2, ha='center', va='center', fontweight='bold')
-                    
+                        p1, p2 = df.iloc[i], df.iloc[(i + 1) % len(df)]
+                        dE, dN = p2['E'] - p1['E'], p2['N'] - p1['N']
+                        dist, bear = np.sqrt(dE**2 + dN**2), (np.degrees(np.arctan2(dE, dN)) + 360) % 360
+                        txt_angle = np.degrees(np.arctan2(dN, dE))
+                        if txt_angle > 90: txt_angle -= 180
+                        elif txt_angle < -90: txt_angle += 180
+                        ax.text((p1['E']+p2['E'])/2, (p1['N']+p2['N'])/2, f"{format_dms(bear)}\n{dist:.2f}m", fontsize=label_size_data, color='brown', fontweight='bold', ha='center', rotation=txt_angle)
+                        ax.scatter(p1['E'], p1['N'], color='white', edgecolor='red', s=300, zorder=5, linewidth=2)
+                        ax.text(p1['E'], p1['N'], str(int(p1['STN'])), fontsize=label_size_stn/2, color='black', fontweight='bold', ha='center', va='center', zorder=6)
+
                     ax.set_aspect("equal"); st.pyplot(fig)
 
-                st.subheader("📋 Jadual Data")
+                st.markdown("---")
+                st.subheader("📋 Jadual Data Koordinat")
                 st.dataframe(df[['STN', 'E', 'N', 'lat', 'lon']], use_container_width=True)
-            else: st.error("❌ Kolum STN, E, N tidak dijumpai.")
-        except Exception as e: st.error(f"❌ Ralat: {e}")
+
+            else: st.error("❌ Kolum STN, E, N tak jumpa dalam CSV!")
+        except Exception as e: st.error(f"❌ Ada ralat: {e}")
