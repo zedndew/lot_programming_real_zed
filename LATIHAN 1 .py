@@ -12,22 +12,47 @@ from pyproj import Transformer
 # Set page configuration
 st.set_page_config(page_title="Sistem Survey Lot PUO", page_icon="🔐", layout="wide")
 
-# ================== CUSTOM CSS (AESTHETIC DARK BROWN) ==================
+# ================== CSS ADVANCED (FIXED CENTER & NO SCROLL) ==================
 def local_css():
     st.markdown("""
         <style>
+        /* Buang padding asal Streamlit & hide scrollbar pada login */
+        .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            max-width: 100% !important;
+        }
+        
+        #MainMenu, footer, header {visibility: hidden;}
+        
         /* Background App */
         .stApp {
             background-color: #1b1714;
         }
 
-        /* Login Card Container */
-        .login-container {
+        /* Container utama untuk paksa tengah */
+        .main-login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background-color: #1b1714;
+            overflow: hidden;
+        }
+
+        /* Kotak Login (Card) */
+        .login-card {
             background-color: #2c2420;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             border: 1px solid #3d332d;
+            width: 450px;
             text-align: center;
         }
 
@@ -35,37 +60,46 @@ def local_css():
         .stTextInput > div > div > input {
             background-color: #3d332d !important;
             color: #dcd0c0 !important;
-            border-radius: 10px !important;
+            border-radius: 12px !important;
             border: 1px solid #5a4a42 !important;
+            padding: 10px !important;
         }
 
         /* Button Styling */
         .stButton > button {
             background-color: #634e42 !important;
             color: #f5f5f5 !important;
-            border-radius: 10px !important;
+            border-radius: 12px !important;
             border: none !important;
-            height: 3em !important;
+            height: 3.5em !important;
             font-weight: bold !important;
-            transition: 0.3s !important;
+            width: 100% !important;
+            transition: 0.4s !important;
+            margin-top: 10px;
         }
         .stButton > button:hover {
             background-color: #8a6d5d !important;
             border: 1px solid #dcd0c0 !important;
+            transform: translateY(-2px);
         }
 
-        /* Reset Button Specific */
-        .reset-btn button {
+        /* Reset Button Styling */
+        .reset-link button {
             background-color: transparent !important;
             color: #a89081 !important;
             text-decoration: underline !important;
             border: none !important;
+            font-size: 0.9em !important;
+            height: auto !important;
         }
 
-        /* Title & Text */
-        h2, p, label {
-            color: #dcd0c0 !important;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Typography */
+        h2 { color: #dcd0c0 !important; font-family: 'Arial', sans-serif; margin-bottom: 25px; margin-top: 15px; }
+        label { color: #a89081 !important; font-size: 0.9em !important; margin-bottom: 5px; }
+        
+        /* Ensure main app is scrollable after login */
+        .main-app-content {
+            overflow-y: auto !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -96,44 +130,45 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        # Menghasilkan ruang kosong di atas
-        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        # Wrapper for centering everything
+        st.markdown('<div class="main-login-wrapper">', unsafe_allow_html=True)
         
-        _, col_mid, _ = st.columns([1, 1.2, 1])
+        _, col_mid, _ = st.columns([1, 1, 1]) # Use columns to constrain width
         
         with col_mid:
-            # Login Card
-            st.markdown("""
-                <div class="login-container">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6195/6195696.png" width="80">
-                    <h2 style='margin-bottom: 25px;'>Sistem Survey Lot PUO</h2>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown('<div class="login-card">', unsafe_allow_html=True)
+            # Icon Aesthetic
+            st.image("https://cdn-icons-png.flaticon.com/512/6195/6195696.png", width=80)
+            st.markdown("<h2>Sistem Survey Lot PUO</h2>", unsafe_allow_html=True)
             
-            # Form Inputs
-            user_id = st.text_input("👤 ID Pengguna", key="user_id", placeholder="Masukkan ID anda")
+            user_id = st.text_input("👤 ID Pengguna", key="user_id", placeholder="Masukkan ID")
             password = st.text_input("🔑 Kata Laluan", type="password", key="user_pass", placeholder="••••••••")
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            if st.button("Log Masuk Utamakan", use_container_width=True):
+            if st.button("Log Masuk", use_container_width=True):
                 if user_id == "zed" and password == "admin123":
                     st.session_state["password_correct"] = True
                     st.rerun()
                 else:
                     st.error("😕 ID atau Kata Laluan salah.")
             
-            st.markdown('<div class="reset-btn">', unsafe_allow_html=True)
-            if st.button("❓ Lupa Kata Laluan?", use_container_width=True):
+            st.markdown('<div class="reset-link">', unsafe_allow_html=True)
+            if st.button("Lupa Kata Laluan?", key="forgot_btn"):
                 reset_password_dialog()
             st.markdown('</div>', unsafe_allow_html=True)
             
+            st.markdown('</div>', unsafe_allow_html=True) # End card
+        
+        st.markdown('</div>', unsafe_allow_html=True) # End wrapper
         return False
     return True
 
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
-    
+    # Unlock scrolling for main app
+    st.markdown("<style>html, body, [data-testid='stAppViewContainer'] { overflow: auto !important; }</style>", unsafe_allow_html=True)
+
     # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
         """
@@ -245,7 +280,6 @@ if check_password():
                 st.subheader("📐 Paparan Pelan Ukur")
 
                 if show_interactive_map:
-                    # --- MOD PETA INTERAKTIF ---
                     google_map_url = 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
                     if map_provider == "Standard Map":
                         google_map_url = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
@@ -275,7 +309,6 @@ if check_password():
                     folium_static(m, width=900, height=550)
 
                 else:
-                    # --- MOD MATPLOTLIB ---
                     if plot_theme == "Dark Mode": bg_color, grid_color = "#121212", "#555555"
                     elif plot_theme == "Blueprint": bg_color, grid_color = "#003366", "#004080"
                     else: bg_color, grid_color = "#ffffff", "#aaaaaa"
