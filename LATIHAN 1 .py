@@ -185,14 +185,29 @@ if check_password():
                         if angle > 90: angle -= 180
                         elif angle < -90: angle += 180
                         
-                        # OFFSET STABIL: Guna slider yang kau letak tu (dist_offset_val) untuk tolak dia selari
                         v_offset = -15 - int(dist_offset_val * 3)
                         
                         folium.Marker([ (p1['lat'] + p2['lat']) / 2, (p1['lon'] + p2['lon']) / 2],
                             icon=folium.DivIcon(html=f'''<div style="transform: rotate({angle}deg); text-align: center; width: 200px; margin-left: -100px; margin-top: {v_offset}px;">
                                 <div style="font-size: {label_size_data}pt; color: white; text-shadow: 2px 2px 4px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; font-weight: bold; line-height: 1.2;">{format_dms(bear)}<br><span style="color: #FFD700;">{dist:.2f}m</span></div></div>''')).add_to(m)
                         
-                        folium.Marker([p1['lat'], p1['lon']], icon=folium.DivIcon(html=f'''<div style="background-color: white; border: 2px solid red; border-radius: 50%; width: {label_size_stn}px; height: {label_size_stn}px; display: flex; align-items: center; justify-content: center; font-size: {label_size_stn*0.6}px; font-weight: bold; color: black; margin-left: -{label_size_stn/2}px; margin-top: -{label_size_stn/2}px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5);">{int(p1["STN"])}</div>''')).add_to(m)
+                        # TAMBAH POPUP DI SINI:
+                        popup_info = f"""
+                        <div style="font-family: Arial, sans-serif; min-width: 150px;">
+                            <h4 style="margin: 0; color: #B22222;">📍 Stesen {int(p1['STN'])}</h4>
+                            <hr style="margin: 5px 0;">
+                            <b>E:</b> {p1['E']:.3f}<br>
+                            <b>N:</b> {p1['N']:.3f}<br>
+                            <b>Lat:</b> {p1['lat']:.6f}<br>
+                            <b>Lon:</b> {p1['lon']:.6f}
+                        </div>
+                        """
+                        
+                        folium.Marker(
+                            [p1['lat'], p1['lon']], 
+                            icon=folium.DivIcon(html=f'''<div style="background-color: white; border: 2px solid red; border-radius: 50%; width: {label_size_stn}px; height: {label_size_stn}px; display: flex; align-items: center; justify-content: center; font-size: {label_size_stn*0.6}px; font-weight: bold; color: black; margin-left: -{label_size_stn/2}px; margin-top: -{label_size_stn/2}px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); cursor: pointer;">{int(p1["STN"])}</div>'''),
+                            popup=folium.Popup(popup_info, max_width=250)
+                        ).add_to(m)
 
                     if show_luas_label:
                         folium.Marker([df['lat'].mean(), df['lon'].mean()], icon=folium.DivIcon(html=f'<div style="font-size: {label_size_luas}pt; color: #00FF00; text-shadow: 3px 3px 5px black; font-weight: 900; width: 250px; text-align: center; margin-left: -125px;">{area:.2f} m²</div>')).add_to(m)
