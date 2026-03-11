@@ -63,6 +63,13 @@ if check_password():
             b64_str = base64.b64encode(img_file.read()).decode()
             profile_img_src = f"data:image/jpeg;base64,{b64_str}"
 
+    # --- BACA GAMBAR LOGO POLI ---
+    poli_logo_src = ""
+    if os.path.exists("Poli_Logo.png"):
+        with open("Poli_Logo.png", "rb") as img_file:
+            b64_logo = base64.b64encode(img_file.read()).decode()
+            poli_logo_src = f"data:image/png;base64,{b64_logo}"
+
     # --- 👤 PROFIL PENGGUNA AESTHETIC (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
         f"""
@@ -85,33 +92,38 @@ if check_password():
         """, unsafe_allow_html=True
     )
 
-    # --- BAHAGIAN HEADER UTAMA (KOD ASAL KAU) ---
-    col_logo, col_text = st.columns([1, 4])
-    with col_logo:
-        # check if file exists
-        if os.path.exists("Poli_Logo.png"):
-            st.image("Poli_Logo.png", width=120)
-        else:
-            st.warning("⚠️ Logo 'Poli_Logo.png' tidak dijumpai.")
+    # --- BAHAGIAN HEADER UTAMA & BUTANG (KAD PUTIH) ---
+    col_main, col_btn = st.columns([3, 1])
     
-    with col_text:
-        st.markdown("""
-        <style>
-        .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 35px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -1px; }
-        .sub-title { font-size: 16px; color: #555; margin-top: 0px; }
-        </style>
-        <div>
-            <h1 class="main-title">SISTEM SURVEY LOT</h1>
-            <p class="sub-title">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
+    with col_main:
+        # Rekaan Kad Putih dengan Logo Tersusun Clean
+        logo_html = f'<img src="{poli_logo_src}" width="160" style="margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">' if poli_logo_src else '<p style="color:red;">⚠️ Logo Poli tidak dijumpai</p>'
+        
+        st.markdown(f"""
+        <div style="background-color: #ffffff; padding: 30px 20px 25px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;">
+            {logo_html}
+            <h1 style="color: #1e293b; font-family: 'Arial Black', Gadget, sans-serif; font-size: 38px; font-weight: 900; margin-bottom: 5px; line-height: 1.2; letter-spacing: -1px;">SISTEM SURVEY LOT</h1>
+            <p style="color: #64748b; font-size: 16px; margin-top: 0; font-weight: 500;">Politeknik Ungku Omar | Jabatan Kejuruteraan Awam</p>
         </div>
         """, unsafe_allow_html=True)
         
-    st.markdown("<hr style='border: 1px solid #eee; margin-top: 0px;'>", unsafe_allow_html=True)
+    with col_btn:
+        st.markdown("<br><br>", unsafe_allow_html=True) # Jarakkan sikit supaya center dengan kotak sebelah
+        if st.button("🔑 Tukar Kata Laluan", use_container_width=True):
+            reset_password_dialog()
+            
+        if st.button("🚪 Log Keluar", use_container_width=True):
+            st.session_state["password_correct"] = False
+            st.rerun()
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # ================== RUANG UPLOAD FILE DI TENGAH ==================
-    st.subheader("📂 Muat Naik Data CSV")
+    st.markdown("### 📂 Muat Naik Data CSV")
     uploaded_file = st.file_uploader("Upload fail koordinat anda di sini", type=["csv"])
     
+    st.markdown("<hr style='border: 1px solid #eee; margin-top: 10px;'>", unsafe_allow_html=True)
+
     # ================== SIDEBAR SETTINGS ==================
     st.sidebar.header("⚙️ Tetapan Paparan")
     
@@ -143,7 +155,6 @@ if check_password():
     # ================== BACA DATA ==================
     if uploaded_file is not None:
         try:
-            st.markdown("---")
             df = pd.read_csv(uploaded_file)
             
             if all(col in df.columns for col in ['STN', 'E', 'N']):
