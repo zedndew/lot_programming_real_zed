@@ -8,6 +8,7 @@ import os
 import folium
 from streamlit_folium import folium_static
 from pyproj import Transformer
+import base64  # <-- Tambah library ni untuk baca gambar tempatan
 
 # ================== FUNGSI TUKAR DMS ==================
 def format_dms(decimal_degree):
@@ -55,11 +56,18 @@ def check_password():
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
     
+    # --- BACA GAMBAR PROFIL TEMPATAN (GOJO) ---
+    profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" # Gambar asal (fallback)
+    if os.path.exists("gojo_image.jpeg"):
+        with open("gojo_image.jpeg", "rb") as img_file:
+            b64_str = base64.b64encode(img_file.read()).decode()
+            profile_img_src = f"data:image/jpeg;base64,{b64_str}"
+
     # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
     st.sidebar.markdown(
-        """
+        f"""
         <div style="background: linear-gradient(135deg, #00B4DB, #0083B0); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="80" style="border-radius: 50%; border: 3px solid white;">
+            <img src="{profile_img_src}" width="80" height="80" style="border-radius: 50%; border: 3px solid white; object-fit: cover;">
             <h3 style="color: white; margin-top: 10px; font-family: sans-serif;">Hai, Zed!</h3>
             <p style="color: #e0e0e0; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
         </div>
@@ -191,7 +199,6 @@ if check_password():
                             icon=folium.DivIcon(html=f'''<div style="transform: rotate({angle}deg); text-align: center; width: 200px; margin-left: -100px; margin-top: {v_offset}px;">
                                 <div style="font-size: {label_size_data}pt; color: white; text-shadow: 2px 2px 4px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; font-weight: bold; line-height: 1.2;">{format_dms(bear)}<br><span style="color: #FFD700;">{dist:.2f}m</span></div></div>''')).add_to(m)
                         
-                        # TAMBAH POPUP DI SINI:
                         popup_info = f"""
                         <div style="font-family: Arial, sans-serif; min-width: 150px;">
                             <h4 style="margin: 0; color: #B22222;">📍 Stesen {int(p1['STN'])}</h4>
