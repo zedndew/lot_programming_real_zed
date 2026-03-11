@@ -9,8 +9,75 @@ import folium
 from streamlit_folium import folium_static 
 from pyproj import Transformer
 
-# ================== CONFIG PAGE ==================
-st.set_page_config(page_title="Sistem Survey Lot PUO", page_icon="📍", layout="wide")
+# ================== CONFIG HALAMAN ==================
+st.set_page_config(page_title="Sistem Survey Lot PUO", layout="wide", initial_sidebar_state="collapsed")
+
+# ================== CUSTOM CSS (AESTHETIC DARK BROWN) ==================
+st.markdown("""
+    <style>
+    /* Sembunyikan Header & Footer Streamlit */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* Elakkan Scrolling pada Login Page */
+    .stApp {
+        background-color: #1a1614;
+    }
+
+    /* Container Login di Tengah */
+    .login-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+        max-width: 400px;
+        margin: auto;
+    }
+
+    /* Input Field Styling */
+    .stTextInput input {
+        background-color: #2d2621 !important;
+        color: #e0d8d0 !important;
+        border: 1px solid #4a3f35 !important;
+        border-radius: 10px !important;
+        padding: 12px !important;
+    }
+
+    /* Button Styling */
+    .stButton button {
+        background-color: #5c4a3c !important;
+        color: white !important;
+        border-radius: 10px !important;
+        border: none !important;
+        height: 45px !important;
+        font-weight: bold !important;
+        transition: 0.3s !important;
+    }
+    .stButton button:hover {
+        background-color: #826a56 !important;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.3) !important;
+    }
+
+    /* Label & Title */
+    label {
+        color: #c4b5a8 !important;
+        font-weight: 500 !important;
+    }
+    h2 {
+        color: #d9cbbd !important;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: -1px;
+    }
+    
+    /* Dialog Box */
+    div[role="dialog"] {
+        background-color: #2d2621 !important;
+        color: white !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # ================== FUNGSI TUKAR DMS ==================
 def format_dms(decimal_degree):
@@ -36,123 +103,42 @@ def reset_password_dialog():
 
 def check_password():
     if "password_correct" not in st.session_state:
-        # --- CSS COMPACT & AESTHETIC (FIT TO SCREEN) ---
-        st.markdown("""
-            <style>
-            /* Buang scrollbar dan paksa tinggi 100% */
-            html, body, [data-testid="stAppViewContainer"] {
-                overflow: hidden;
-                height: 100vh;
-            }
-
-            .stApp {
-                background: linear-gradient(rgba(26, 18, 11, 0.9), rgba(44, 34, 24, 0.95)), 
-                            url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');
-                background-size: cover;
-                background-position: center;
-            }
-
-            /* Kecilkan container utama */
-            [data-testid="stVerticalBlock"] > div:has(input) {
-                background: rgba(35, 25, 18, 0.7);
-                backdrop-filter: blur(10px);
-                padding: 25px 35px !important;
-                border-radius: 20px;
-                border: 1px solid rgba(166, 123, 91, 0.2);
-                max-width: 450px;
-                margin: auto;
-            }
-
-            /* Kecilkan gap antara elemen */
-            [data-testid="stVerticalBlock"] {
-                gap: 0.5rem !important;
-            }
-
-            /* Input Style (Lebih nipis) */
-            .stTextInput input {
-                background-color: rgba(255, 255, 255, 0.03) !important;
-                color: #D2B48C !important;
-                border: 1px solid rgba(166, 123, 91, 0.3) !important;
-                border-radius: 10px !important;
-                padding: 8px !important;
-                font-size: 14px !important;
-            }
-
-            /* Button Log Masuk (Compact) */
-            div.stButton > button:first-child {
-                background: linear-gradient(135deg, #5D4037, #2C1B14) !important;
-                color: #F5F5DC !important;
-                border-radius: 10px !important;
-                height: 42px !important;
-                font-size: 14px !important;
-                font-weight: 600 !important;
-                margin-top: 10px !important;
-            }
-
-            /* Button Lupa Password (Lebih kecil) */
-            div.stButton:nth-child(5) > button {
-                background: transparent !important;
-                color: #8D6E63 !important;
-                border: none !important;
-                font-size: 12px !important;
-                text-decoration: underline;
-            }
-
-            /* Font saiz tajuk */
-            h1.login-title {
-                font-size: 28px !important;
-                margin-bottom: 0px !important;
-                color: #D2B48C;
-                font-family: 'Garamond', serif;
-            }
-            
-            p.login-sub {
-                font-size: 12px !important;
-                color: #8D6E63;
-                margin-bottom: 15px !important;
-            }
-
-            /* Hide Streamlit Header/Footer */
-            header {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-        """, unsafe_allow_html=True)
-
-        # Letakkan di tengah skrin secara vertical
-        st.markdown("<div style='height: 15vh;'></div>", unsafe_allow_html=True)
+        # Wrapper untuk centering tanpa scrolling
+        st.markdown('<div class="login-container">', unsafe_allow_html=True)
         
-        _, col_mid, _ = st.columns([1, 1, 1])
-        with col_mid:
-            st.markdown("<h1 class='login-title' style='text-align: center;'>Sistem Survey Lot</h1>", unsafe_allow_html=True)
-            st.markdown("<p class='login-sub' style='text-align: center;'>POLITEKNIK UNGKU OMAR</p>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; margin-bottom: 25px;'>🤎 Sistem Survey Lot PUO</h2>", unsafe_allow_html=True)
+        
+        user_id = st.text_input("👤 Masukkan ID:", key="user_id")
+        password = st.text_input("🔑 Masukkan Kata Laluan:", type="password", key="user_pass")
+        
+        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+        
+        if st.button("Log Masuk", use_container_width=True):
+            if user_id == "zed" and password == "admin123":
+                st.session_state["password_correct"] = True
+                st.rerun()
+            else:
+                st.error("😕 ID atau Kata Laluan salah.")
+        
+        if st.button("❓ Lupa Kata Laluan?", use_container_width=True):
+            reset_password_dialog()
             
-            user_id = st.text_input("ID PENGGUNA", key="user_id", placeholder="ID Pengguna")
-            password = st.text_input("KATA LALUAN", type="password", key="user_pass", placeholder="••••••••")
-            
-            if st.button("LOG MASUK", use_container_width=True):
-                if user_id == "zed" and password == "admin123":
-                    st.session_state["password_correct"] = True
-                    st.rerun()
-                else:
-                    st.error("😕 ID atau Kata Laluan salah.")
-            
-            if st.button("Lupa Kata Laluan?", use_container_width=True):
-                reset_password_dialog()
+        st.markdown('</div>', unsafe_allow_html=True)
         return False
     return True
 
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
-    # Kembalikan scrollbar selepas login
-    st.markdown("""<style>html, body, [data-testid="stAppViewContainer"] { overflow: auto; height: auto; } .stApp { background: none; } header {visibility: visible;}</style>""", unsafe_allow_html=True)
-
-    # --- 👤 PROFIL PENGGUNA (SIDEBAR PALING ATAS) ---
+    # Tunjukkan kembali sidebar selepas login
+    st.markdown("<style>.stSidebar {display: block !important;}</style>", unsafe_allow_html=True)
+    
+    # --- 👤 PROFIL PENGGUNA (SIDEBAR) ---
     st.sidebar.markdown(
         """
-        <div style="background: linear-gradient(135deg, #6F4E37, #3C2A21); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="80" style="border-radius: 50%; border: 3px solid #D2B48C;">
-            <h3 style="color: #F5F5DC; margin-top: 10px; font-family: sans-serif;">Hai, Zed!</h3>
-            <p style="color: #D2B48C; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
+        <div style="background: linear-gradient(135deg, #5c4a3c, #2d2621); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #7d6855;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="80" style="border-radius: 50%; border: 3px solid #d9cbbd;">
+            <h3 style="color: white; margin-top: 10px; font-family: sans-serif;">Hai, Zed!</h3>
+            <p style="color: #c4b5a8; font-size: 0.8em; margin-bottom: 0px;">Surveyor Berdaftar</p>
         </div>
         """, unsafe_allow_html=True
     )
@@ -168,8 +154,8 @@ if check_password():
     with col_text:
         st.markdown("""
             <style>
-                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; }
-                .sub-title { font-size: 20px; color: #555; margin-top: 0px; }
+                .main-title { font-family: 'Arial Black', Gadget, sans-serif; font-size: 55px; font-weight: 900; margin-bottom: -15px; line-height: 1; letter-spacing: -2px; color: #5c4a3c; }
+                .sub-title { font-size: 20px; color: #826a56; margin-top: 0px; }
             </style>
             <div>
                 <h1 class="main-title">SISTEM SURVEY LOT</h1>
@@ -177,7 +163,7 @@ if check_password():
             </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("<hr style='border: 1px solid #eee; margin-top: 0px;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: 1px solid #4a3f35; margin-top: 0px;'>", unsafe_allow_html=True)
 
     # ================== SIDEBAR SETTINGS ==================
     st.sidebar.header("⚙️ Tetapan Paparan")
@@ -214,7 +200,6 @@ if check_password():
             df = pd.read_csv(uploaded_file)
             
             if all(col in df.columns for col in ['STN', 'E', 'N']):
-                
                 transformer = Transformer.from_crs("EPSG:4390", "EPSG:4326", always_xy=True)
                 df['lon'], df['lat'] = transformer.transform(df['E'].values, df['N'].values)
                 
@@ -257,6 +242,7 @@ if check_password():
                 st.subheader("📐 Paparan Pelan Ukur")
 
                 if show_interactive_map:
+                    # --- MOD PETA INTERAKTIF ---
                     google_map_url = 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
                     if map_provider == "Standard Map":
                         google_map_url = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
@@ -286,6 +272,7 @@ if check_password():
                     folium_static(m, width=900, height=550)
 
                 else:
+                    # --- MOD MATPLOTLIB ---
                     if plot_theme == "Dark Mode": bg_color, grid_color = "#121212", "#555555"
                     elif plot_theme == "Blueprint": bg_color, grid_color = "#003366", "#004080"
                     else: bg_color, grid_color = "#ffffff", "#aaaaaa"
