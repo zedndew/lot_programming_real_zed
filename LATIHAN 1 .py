@@ -17,6 +17,14 @@ def format_dms(decimal_degree):
     s = round((((decimal_degree - d) * 60) - m) * 60, 0)
     return f"{d}°{abs(m):02d}'{abs(int(s)):02d}\""
 
+# ================== DATABASE PENGGUNA ==================
+if "user_db" not in st.session_state:
+    st.session_state["user_db"] = {
+        "zed": {"password": "admin123", "name": "Zed"},
+        "andrew": {"password": "admin1234", "name": "Andrew"},
+        "idham": {"password": "admin12345", "name": "Idham"}
+    }
+
 # ================== FUNGSI LOGIN & KEMASKINI ==================
 @st.dialog("🔑 Kemaskini Kata Laluan")
 def reset_password_dialog():
@@ -26,11 +34,12 @@ def reset_password_dialog():
     pass_sah = st.text_input("Sahkan Kata Laluan Baharu:", type="password")
     
     if st.button("Simpan Kata Laluan", use_container_width=True):
-        if id_sah == "zed" and pass_baru == pass_sah and pass_baru != "":
+        if id_sah in st.session_state["user_db"] and pass_baru == pass_sah and pass_baru != "":
+            st.session_state["user_db"][id_sah]["password"] = pass_baru
             st.success("✅ Kata laluan berjaya dikemaskini!")
             st.rerun()
         else:
-            st.error("❌ Maklumat tidak sepadan atau kosong.")
+            st.error("❌ Maklumat tidak sepadan atau ID salah.")
 
 def check_password():
     if "password_correct" not in st.session_state:
@@ -42,8 +51,10 @@ def check_password():
             st.markdown("<br>", unsafe_allow_html=True)
             
             if st.button("Log Masuk", use_container_width=True):
-                if user_id == "zed" and password == "admin123":
+                # Semak kalau ID wujud dan password betul
+                if user_id in st.session_state["user_db"] and password == st.session_state["user_db"][user_id]["password"]:
                     st.session_state["password_correct"] = True
+                    st.session_state["current_user"] = user_id # Simpan ID user yg tgh login
                     st.rerun()
                 else:
                     st.error("😕 ID atau Kata Laluan salah.")
@@ -55,6 +66,10 @@ def check_password():
 
 # ================== MAIN APP (SELEPAS LOGIN) ==================
 if check_password():
+    
+    # Ambil maklumat user yang tengah login
+    current_user_id = st.session_state.get("current_user", "zed")
+    current_name = st.session_state["user_db"][current_user_id]["name"]
     
     # --- BACA GAMBAR PROFIL TEMPATAN (GOJO) ---
     profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
@@ -85,7 +100,7 @@ if check_password():
             <img src="{profile_img_src}" width="65" height="65" 
                  style="border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover; box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);">
             <div style="text-align: left;">
-                <h3 style="color: white; margin: 0; font-family: 'Segoe UI', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px;">Hai, Zed! 👋</h3>
+                <h3 style="color: white; margin: 0; font-family: 'Segoe UI', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px;">Hai, {current_name}! 👋</h3>
                 <p style="color: #00d2ff; font-size: 0.85rem; margin: 2px 0 0 0; font-weight: 600;">Pakar Ukur Lot PUO ✨</p>
             </div>
         </div>
