@@ -71,7 +71,7 @@ if check_password():
     current_user_id = st.session_state.get("current_user", "zed")
     current_name = st.session_state["user_db"][current_user_id]["name"]
     
-    # --- BACA GAMBAR PROFIL IKUT USER ---
+    # --- BACA GAMBAR PROFIL IKUT USER (DIKEMASKINI) ---
     profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" # Default icon
     
     # Tentukan nama fail ikut siapa yang login
@@ -80,6 +80,8 @@ if check_password():
         img_filename = "gojo_image.jpeg"
     elif current_user_id == "andrew":
         img_filename = "spiderman.jpg"
+    elif current_user_id == "idham": # Ditambah untuk user ketiga
+        img_filename = "gambar_idham.jpeg"
     
     # Proses gambar kalau wujud
     if img_filename and os.path.exists(img_filename):
