@@ -131,9 +131,13 @@ if check_password():
     show_bg_grid = st.sidebar.checkbox("Papar Grid Latar", value=True)
     grid_interval = st.sidebar.slider("Jarak Selang Grid", 5, 50, 10)
 
+    # --- GAYA LABEL (DITAMBAH FUNGSI ON/OFF STESEN & DATA) ---
     st.sidebar.markdown("---")
     st.sidebar.subheader("🖋️ Gaya Label")
     show_luas_label = st.sidebar.checkbox("Papar Label LUAS", value=True)
+    show_stn_label = st.sidebar.checkbox("Papar Label STESEN", value=True)
+    show_data_label = st.sidebar.checkbox("Papar Label BEARING & JARAK", value=True)
+    
     label_size_stn = st.sidebar.slider("Saiz Bulatan Stesen", 15, 30, 22) 
     label_size_data = st.sidebar.slider("Saiz Bearing/Jarak", 5, 12, 7)
     label_size_luas = st.sidebar.slider("Saiz Tulisan LUAS", 8, 30, 14) 
@@ -167,13 +171,12 @@ if check_password():
                 centroid_m = poly_geom.centroid
                 area = poly_geom.area
 
-                # --- 💾 EKSPORT QGIS (DIKEMASKINI DENGAN DATA LENGKAP) ---
+                # --- 💾 EKSPORT QGIS ---
                 st.sidebar.markdown("---")
                 st.sidebar.subheader("💾 Eksport Data")
                 
                 features = []
                 
-                # 1. Feature Poligon (Keluasan & Info Lot)
                 features.append({
                     "type": "Feature",
                     "geometry": mapping(poly_ll),
@@ -185,7 +188,6 @@ if check_password():
                     }
                 })
                 
-                # 2. Feature Titik (Point) untuk jadual setiap Stesen & Koordinat
                 for _, row in df.iterrows():
                     features.append({
                         "type": "Feature",
@@ -200,18 +202,15 @@ if check_password():
                         }
                     })
                 
-                # 3. Feature Garisan (LineString) untuk jadual Bearing & Jarak
                 for i in range(len(df)):
                     p1 = df.iloc[i]
                     p2 = df.iloc[(i + 1) % len(df)]
                     
-                    # Kira semula bearing & jarak
                     dE, dN = p2['E'] - p1['E'], p2['N'] - p1['N']
                     dist = np.sqrt(dE**2 + dN**2)
                     bear = (np.degrees(np.arctan2(dE, dN)) + 360) % 360
                     bear_str = format_dms(bear)
                     
-                    # Bina garisan antara 2 stesen
                     line_segment_ll = LineString([(p1['lon'], p1['lat']), (p2['lon'], p2['lat'])])
                     
                     features.append({
@@ -273,26 +272,30 @@ if check_password():
                         
                         v_offset = -15 - int(dist_offset_val * 3)
                         
-                        folium.Marker([ (p1['lat'] + p2['lat']) / 2, (p1['lon'] + p2['lon']) / 2],
-                            icon=folium.DivIcon(html=f'''<div style="transform: rotate({angle}deg); text-align: center; width: 200px; margin-left: -100px; margin-top: {v_offset}px;">
-                                <div style="font-size: {label_size_data}pt; color: white; text-shadow: 2px 2px 4px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; font-weight: bold; line-height: 1.2;">{format_dms(bear)}<br><span style="color: #FFD700;">{dist:.2f}m</span></div></div>''')).add_to(m)
+                        # Papar label bearing & jarak jika di-on-kan
+                        if show_data_label:
+                            folium.Marker([ (p1['lat'] + p2['lat']) / 2, (p1['lon'] + p2['lon']) / 2],
+                                icon=folium.DivIcon(html=f'''<div style="transform: rotate({angle}deg); text-align: center; width: 200px; margin-left: -100px; margin-top: {v_offset}px;">
+                                    <div style="font-size: {label_size_data}pt; color: white; text-shadow: 2px 2px 4px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; font-weight: bold; line-height: 1.2;">{format_dms(bear)}<br><span style="color: #FFD700;">{dist:.2f}m</span></div></div>''')).add_to(m)
                         
-                        popup_info = f"""
-                        <div style="font-family: Arial, sans-serif; min-width: 150px;">
-                            <h4 style="margin: 0; color: #B22222;">📍 Stesen {int(p1['STN'])}</h4>
-                            <hr style="margin: 5px 0;">
-                            <b>E:</b> {p1['E']:.3f}<br>
-                            <b>N:</b> {p1['N']:.3f}<br>
-                            <b>Lat:</b> {p1['lat']:.6f}<br>
-                            <b>Lon:</b> {p1['lon']:.6f}
-                        </div>
-                        """
-                        
-                        folium.Marker(
-                            [p1['lat'], p1['lon']], 
-                            icon=folium.DivIcon(html=f'''<div style="background-color: white; border: 2px solid red; border-radius: 50%; width: {label_size_stn}px; height: {label_size_stn}px; display: flex; align-items: center; justify-content: center; font-size: {label_size_stn*0.6}px; font-weight: bold; color: black; margin-left: -{label_size_stn/2}px; margin-top: -{label_size_stn/2}px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); cursor: pointer;">{int(p1["STN"])}</div>'''),
-                            popup=folium.Popup(popup_info, max_width=250)
-                        ).add_to(m)
+                        # Papar stesen jika di-on-kan
+                        if show_stn_label:
+                            popup_info = f"""
+                            <div style="font-family: Arial, sans-serif; min-width: 150px;">
+                                <h4 style="margin: 0; color: #B22222;">📍 Stesen {int(p1['STN'])}</h4>
+                                <hr style="margin: 5px 0;">
+                                <b>E:</b> {p1['E']:.3f}<br>
+                                <b>N:</b> {p1['N']:.3f}<br>
+                                <b>Lat:</b> {p1['lat']:.6f}<br>
+                                <b>Lon:</b> {p1['lon']:.6f}
+                            </div>
+                            """
+                            
+                            folium.Marker(
+                                [p1['lat'], p1['lon']], 
+                                icon=folium.DivIcon(html=f'''<div style="background-color: white; border: 2px solid red; border-radius: 50%; width: {label_size_stn}px; height: {label_size_stn}px; display: flex; align-items: center; justify-content: center; font-size: {label_size_stn*0.6}px; font-weight: bold; color: black; margin-left: -{label_size_stn/2}px; margin-top: -{label_size_stn/2}px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); cursor: pointer;">{int(p1["STN"])}</div>'''),
+                                popup=folium.Popup(popup_info, max_width=250)
+                            ).add_to(m)
 
                     if show_luas_label:
                         folium.Marker([df['lat'].mean(), df['lon'].mean()], icon=folium.DivIcon(html=f'<div style="font-size: {label_size_luas}pt; color: #00FF00; text-shadow: 3px 3px 5px black; font-weight: 900; width: 250px; text-align: center; margin-left: -125px;">{area:.2f} m²</div>')).add_to(m)
@@ -326,10 +329,14 @@ if check_password():
                         if txt_angle > 90: txt_angle -= 180
                         elif txt_angle < -90: txt_angle += 180
                         
-                        ax.text((p1['E']+p2['E'])/2, (p1['N']+p2['N'])/2, f"{format_dms(bear)}\n{dist:.2f}m", fontsize=label_size_data, color='brown', fontweight='bold', ha='center', rotation=txt_angle, va='bottom' if dN > 0 else 'top')
+                        # Papar label bearing & jarak jika di-on-kan
+                        if show_data_label:
+                            ax.text((p1['E']+p2['E'])/2, (p1['N']+p2['N'])/2, f"{format_dms(bear)}\n{dist:.2f}m", fontsize=label_size_data, color='brown', fontweight='bold', ha='center', rotation=txt_angle, va='bottom' if dN > 0 else 'top')
                         
-                        ax.scatter(p1['E'], p1['N'], color='white', edgecolor='red', s=300, zorder=5, linewidth=2)
-                        ax.text(p1['E'], p1['N'], str(int(p1['STN'])), fontsize=label_size_stn/2, color='black', fontweight='bold', ha='center', va='center', zorder=6)
+                        # Papar stesen jika di-on-kan
+                        if show_stn_label:
+                            ax.scatter(p1['E'], p1['N'], color='white', edgecolor='red', s=300, zorder=5, linewidth=2)
+                            ax.text(p1['E'], p1['N'], str(int(p1['STN'])), fontsize=label_size_stn/2, color='black', fontweight='bold', ha='center', va='center', zorder=6)
 
                     ax.set_aspect("equal"); st.pyplot(fig)
 
