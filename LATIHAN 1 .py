@@ -167,17 +167,71 @@ if check_password():
                 centroid_m = poly_geom.centroid
                 area = poly_geom.area
 
-                # --- 💾 EKSPORT QGIS ---
+                # --- 💾 EKSPORT QGIS (DIKEMASKINI DENGAN DATA LENGKAP) ---
                 st.sidebar.markdown("---")
                 st.sidebar.subheader("💾 Eksport Data")
+                
+                features = []
+                
+                # 1. Feature Poligon (Keluasan & Info Lot)
+                features.append({
+                    "type": "Feature",
+                    "geometry": mapping(poly_ll),
+                    "properties": {
+                        "Jenis_Geometri": "Poligon Lot",
+                        "Luas_sqm": round(area, 2),
+                        "Luas_Ekar": round(area/4046.856, 4),
+                        "Jumlah_Stesen": len(df)
+                    }
+                })
+                
+                # 2. Feature Titik (Point) untuk jadual setiap Stesen & Koordinat
+                for _, row in df.iterrows():
+                    features.append({
+                        "type": "Feature",
+                        "geometry": mapping(Point(row['lon'], row['lat'])),
+                        "properties": {
+                            "Jenis_Geometri": "Titik Stesen",
+                            "STN": str(int(row['STN'])),
+                            "E_Coord": round(float(row['E']), 3),
+                            "N_Coord": round(float(row['N']), 3),
+                            "Latitude": float(row['lat']),
+                            "Longitude": float(row['lon'])
+                        }
+                    })
+                
+                # 3. Feature Garisan (LineString) untuk jadual Bearing & Jarak
+                for i in range(len(df)):
+                    p1 = df.iloc[i]
+                    p2 = df.iloc[(i + 1) % len(df)]
+                    
+                    # Kira semula bearing & jarak
+                    dE, dN = p2['E'] - p1['E'], p2['N'] - p1['N']
+                    dist = np.sqrt(dE**2 + dN**2)
+                    bear = (np.degrees(np.arctan2(dE, dN)) + 360) % 360
+                    bear_str = format_dms(bear)
+                    
+                    # Bina garisan antara 2 stesen
+                    line_segment_ll = LineString([(p1['lon'], p1['lat']), (p2['lon'], p2['lat'])])
+                    
+                    features.append({
+                        "type": "Feature",
+                        "geometry": mapping(line_segment_ll),
+                        "properties": {
+                            "Jenis_Geometri": "Garisan Sempadan",
+                            "Dari_STN": str(int(p1['STN'])),
+                            "Ke_STN": str(int(p2['STN'])),
+                            "Bearing": bear_str,
+                            "Jarak_m": round(dist, 3),
+                            "Label_GIS": f"{bear_str}\n{round(dist, 3)}m"
+                        }
+                    })
+
                 geojson_dict = {
                     "type": "FeatureCollection",
-                    "features": [{
-                        "type": "Feature",
-                        "geometry": mapping(poly_ll),
-                        "properties": {"Area_sqm": round(area, 2), "Stations": len(df)}
-                    }]
+                    "features": features
                 }
+                
                 st.sidebar.download_button(
                     label="🚀 Export to QGIS (.geojson)",
                     data=json.dumps(geojson_dict),
