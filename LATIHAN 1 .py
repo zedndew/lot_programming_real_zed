@@ -71,12 +71,22 @@ if check_password():
     current_user_id = st.session_state.get("current_user", "zed")
     current_name = st.session_state["user_db"][current_user_id]["name"]
     
-    # --- BACA GAMBAR PROFIL TEMPATAN (GOJO) ---
-    profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-    if os.path.exists("gojo_image.jpeg"):
-        with open("gojo_image.jpeg", "rb") as img_file:
+    # --- BACA GAMBAR PROFIL IKUT USER ---
+    profile_img_src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" # Default icon
+    
+    # Tentukan nama fail ikut siapa yang login
+    img_filename = None
+    if current_user_id == "zed":
+        img_filename = "gojo_image.jpeg"
+    elif current_user_id == "andrew":
+        img_filename = "spiderman.jpg"
+    
+    # Proses gambar kalau wujud
+    if img_filename and os.path.exists(img_filename):
+        mime_type = "image/png" if img_filename.endswith(".png") else "image/jpeg"
+        with open(img_filename, "rb") as img_file:
             b64_str = base64.b64encode(img_file.read()).decode()
-            profile_img_src = f"data:image/jpeg;base64,{b64_str}"
+            profile_img_src = f"data:{mime_type};base64,{b64_str}"
 
     # --- BACA GAMBAR LOGO POLI ---
     poli_logo_src = ""
